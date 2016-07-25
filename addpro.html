@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href='http://fonts.googleapis.com/css?family=Raleway:100,200,300' rel='stylesheet' type='text/css'>
+	
+	<link href='bootstrap.css' rel='stylesheet' type='text/css'>
+	<link href='style.css' rel='stylesheet' type='text/css'>
+</head>
+<body>
+	<div id="toggle"><span></span></div>
+	<div id="menu">
+		<span id="title"><br></span>
+		<ul>
+			<li><a href="index.html"><span>Add Buyer</span></a></li>
+			<li><a href="buyers.html"><span>View Buyers</span></a></li>
+			<li><a href="addpro.html"><span>Add Product</span></a></li>
+			<li><a href="viewpro.html"><span>View Products</span></a></li>
+		</ul>
+	</div>
+	<div id="wrapper">
+		<div id="logo" style="text-align:right; margin-right:10%;"><span>Maxi-Last</span></div>
+		<section>
+			<br>
+			<form>
+			<div class="col-md-12 col-sm-12">
+				<input type="text" value="" class="form-control req" id="txtname" placeholder="*Enter Product Name"  /> <br>
+				<input type="text" value="" class="form-control req num" id="txtprice100" placeholder="*Enter Price($) for 100" /> <br>
+				<input type="text" value="" class="form-control req num" id="txtprice500" placeholder="*Enter Price($) for 500" /> <br>
+				<input type="text" value="" class="form-control req num" id="txtprice_mt500" placeholder="*Enter Price($) for 500 & more" /> <br>
+				<input type="text" value="" class="form-control num" id="txtshipus2us" placeholder="Enter Shipping($) US-US" /> <br>
+				<input type="text" value="" class="form-control num" id="txtshipuk2uk" placeholder="Enter Shipping($) UK-UK" /> <br>
+				<input type="text" value="" class="form-control num" id="txtshipin2us" placeholder="Enter Shipping($) IN-US" /> <br>
+				<input type="text" value="" class="form-control num" id="txtshipin2uk" placeholder="Enter Shipping($) IN-UK" /> <br>
+				<input type="text" value="" class="form-control num" id="txtshipin2in" placeholder="Enter Shipping($) IN-IN" /> <br>
+				<input type="text" value="" class="form-control req" id="txtcode" placeholder="*Enter Code" /> <br>
+				<input type="button"  id="btnsave" class="form-control" value="Add New Product" placeholder="Enter Code" /> <br>
+				<input type="hidden" id="status" value="" />
+			</div>
+			</form>			
+		</section>
+	</div>
+	
+	<script src="jquery.min.js"></script>
+	<script src="common.js"></script> 
+	<script>
+	$(document).ready(function()
+	{
+		var pricepat = /^[0-9\.]+$/;
+		
+		$("#btnsave").click(function()
+		{
+			
+			$("input[type=text]").each(function()
+			{
+				if($(this).hasClass("req"))
+				{
+					if($(this).prop("value")=="")
+					{
+						alert("Enter Details Properly");
+						$("#status").attr("value",$(this).prop("id"));
+						return false;
+					}
+					else
+						$("#status").attr("value","");
+				}
+				if($(this).hasClass("num") && $(this).prop("value")!="")
+				{
+					if(!$(this).prop("value").match(pricepat))
+					{
+						alert("Enter Price Properly");
+						$("#status").attr("value",$(this).prop("id"));
+						return false;
+					}
+					else
+						$("#status").attr("value","");
+				}
+			});
+			
+			if($("#status").prop("value")!="")
+			{
+				$("#"+$("#status").prop("value")).focus();
+			}
+			else
+			{
+				$.post
+				(
+					'http://www.webmaxinfotech.com/maxilast/index.php',
+					{
+						act:"insert",
+						type:"product",
+						name:document.getElementById("txtname").value,
+						price100:document.getElementById("txtprice100").value,
+						price500:document.getElementById("txtprice500").value,
+						pricemt500:document.getElementById("txtprice_mt500").value,
+						shipus2us:document.getElementById("txtshipus2us").value,
+						shipuk2uk:document.getElementById("txtshipuk2uk").value,
+						shipin2us:document.getElementById("txtshipin2us").value,
+						shipin2uk:document.getElementById("txtshipin2uk").value,
+						shipin2in:document.getElementById("txtshipin2in").value,
+						code:document.getElementById("txtcode").value
+					},
+					function(data)
+					{
+						if(data.trim()=="1")
+						{	
+							alert("Product Added Sucessfully!!!");
+							location.reload();
+						}
+						else
+							alert("Something Went Wrong .\n"+data);
+						
+					}
+				);
+			}
+			
+			/*
+			if($("#txtname").prop("value")=="")
+			{
+				alert("Enter Name");
+				$("#txtname").focus();
+				return false;
+			}
+			if($("#txtemail").prop("value")=="")
+			{
+				alert("Enter Email");
+				$("#txtemail").focus();
+				return false;
+			}
+			else
+			{
+				if(!$("#txtemail").prop("value").match(emailpat))
+				{
+					alert("Enter Valid Email");
+					$("#txtemail").focus();
+					return false;
+				}
+			}
+			if($("#txtcou").prop("value")=="")
+			{
+				alert("Enter Country");
+				$("#txtcou").focus();
+				return false;
+			}
+			if($("#txtcode").prop("value")=="")
+			{
+				alert("Enter Code");
+				$("#txtcode").focus();
+				return false;
+			}
+			
+			$.post
+			(
+				'http://www.webmaxinfotech.com/maxilast/index.php',
+				{
+				act:"insert",
+				type:"buyer",
+				name:document.getElementById("txtname").value,
+				email:document.getElementById("txtemail").value,
+				phone:document.getElementById("txtphone").value,
+				city:document.getElementById("txtcity").value,
+				state:document.getElementById("txtstate").value,
+				cou:document.getElementById("txtcou").value,
+				skype:document.getElementById("txtskype").value,
+				code:document.getElementById("txtcode").value
+				},
+				function(data)
+				{
+					if(data.trim()=="1")
+						alert("Buyer Added Sucessfully!!!");
+					else
+						alert("Something Went Wrong .\n"+data);
+					location.reload();
+				}
+			);*/
+		});
+		
+		
+	});
+	</script>
+</body>
+</html>
